@@ -36,7 +36,7 @@ start_rendering() (
 	render_pid=$!
 	# TODO: support remote host
 	host=localhost
-	printf "%s\n%s\n" $host $render_pid | tee "$id.desc"
+	printf "%s\n%s\n" $host $render_pid > "$id.desc"
 )
 
 
@@ -56,7 +56,7 @@ check_rendering() (
 
 
 id=$(get_blender_file_id "$SRC_BLEND")
-if read -r progress < <(check_rendering "$id"); then
+if progress=$(check_rendering "$id"); then
 	echo "current progress: $progress"
 	if [ "done" = "$progress" ]; then
 		# TODO: print what is id and why it is printed
@@ -64,8 +64,8 @@ if read -r progress < <(check_rendering "$id"); then
 		# TODO: support copying the result into target destination
 	fi
 else
-	# TODO: write code that I understand
-	{ read -r host && read -r render_id; } < <(start_rendering "$id")
-	echo "Just started rendering by $host:$render_id"
+	start_rendering "$id"
+	{ read -r host && read -r render_pid; } < "$id.desc"
+	echo "Just started rendering by $host:$render_pid"
 fi
 # TODO: support running until rendering is done
