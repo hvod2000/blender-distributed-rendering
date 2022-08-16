@@ -2,15 +2,19 @@
 
 # TODO: support target as second argument
 if [ $# -lt 1 ] || [ $# -gt 2 ]; then
+	# TODO: support argument for printing usage string, i.e. --help
 	echo "Usage: $0 <source_blender_file> [target_png_file]"
+	# TODO: support output of all scenes that are currently rendered
 	exit 64
 fi
 SRC_BLEND=$1
 TARGET=$2
+# TODO: support CLI option to choose render engine
 ENGINE=CYCLES # CYCLES or BLENDER_EEVEE
 
 
 get_blender_file_id() (
+	# TODO: find out if I can just use $1 instead of $src_blend
 	src_blend=$1
 	src_hash=$(sha256sum "$src_blend" | cut -d " " -f1)
 	storage=${XDG_CACHE_HOME:-~/.cache}/blender-renders
@@ -21,6 +25,7 @@ get_blender_file_id() (
 
 start_rendering() (
 	id=$1
+	# TODO: use argument instead of global variable
 	cp -- "$SRC_BLEND" "$id.blend"
 	( blender -b "$id.blend" -o "$id##.png" -E $ENGINE -f 85 && mv "${id}85.png" "${id}.png" ) > "$id.log" 2>&1 &
 	render_pid=$!
@@ -62,3 +67,4 @@ else
 	echo "Just started rendering by $host:$render_pid"
 fi
 # TODO: support running until rendering is done
+# TODO: support running multiple instances of waiters
