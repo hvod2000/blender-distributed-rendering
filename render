@@ -3,8 +3,7 @@
 # TODO: support target as second argument
 if [ $# -lt 1 ] || [ $# -gt 2 ]; then
 	echo "Usage: $0 <source_blender_file> [target_png_file]"
-	# TODO: use error code for usage error
-	exit 123
+	exit 64
 fi
 SRC_BLEND=$1
 TARGET=$2
