@@ -12,7 +12,6 @@ TARGET=$2
 # TODO: support CLI option to choose render engine
 ENGINE=CYCLES # CYCLES or BLENDER_EEVEE
 
-
 get_blender_file_id() (
 	# TODO: find out if I can just use $1 instead of $src_blend
 	src_blend=$1
@@ -29,9 +28,10 @@ start_rendering() (
 	cp -- "$SRC_BLEND" "$id.blend"
 	( blender -b "$id.blend" -o "$id##.png" -E $ENGINE -f 85 && mv "${id}85.png" "${id}.png" ) > "$id.log" 2>&1 &
 	render_pid=$!
+	render_cmd=$(ps -p "$render_pid" -o command=)
 	# TODO: support remote host
 	host=localhost
-	printf "%s\n%s\n" $host $render_pid > "$id.desc"
+	printf "%s\n%s\n%s\n" $host $render_pid "$render_cmd" > "$id.desc"
 )
 
 
@@ -39,13 +39,12 @@ check_rendering() (
 	id=$1
 	[ -f "$id.png" ] && { echo "done"; return 0; }
 	[ -f "$id.desc" ] || return 1
-	{ read -r host && read -r render_pid; } < "$id.desc"
+	{ read -r host; read -r render_pid; read -r render_cmd; } < "$id.desc"
 	# currently assume host="localhost"
 	# TODO: support nonlocal host
 	progress=$(tail -1 "$id.log")
-	# TODO: don't assume pid not being reused
-	# TODO: use OS-independent way to check if process is alive
-	ps -p "$render_pid" > /dev/null 2>&1 || return 1
+	actual_cmd=$(ps -p "$render_pid" -o command=) || return 1
+	[ ":$actual_cmd" = ":$render_cmd" ] || return 1
 	echo "$progress"
 )
 
