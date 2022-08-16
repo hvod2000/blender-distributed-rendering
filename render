@@ -42,11 +42,7 @@ start_rendering() (
 
 check_rendering() (
 	id=$1
-	# TODO: find more elegant way to return constant
-	if [ -f "$id.png" ]; then
-		echo done
-		return 0
-	fi
+	[ -f "$id.png" ] && { echo "done"; return 0; }
 	[ -f "$id.desc" ] || return 1
 	{ read host && read render_pid; } < $id.desc
 	# currently assume host="localhost"
