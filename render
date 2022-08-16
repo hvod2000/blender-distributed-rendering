@@ -16,9 +16,10 @@ get_blender_file_id() (
 	# TODO: find out if I can just use $1 instead of $src_blend
 	src_blend=$1
 	src_hash=$(sha256sum "$src_blend" | cut -d " " -f1)
+	src_size=$(wc -c "$src_blend" | cut -d " " -f1)
 	storage=${XDG_CACHE_HOME:-~/.cache}/blender-renders
 	mkdir -p "$storage"
-	echo "$storage/$src_hash"
+	echo "$storage/$src_hash$(( (src_size % 99) + 1 ))"
 )
 
 
@@ -26,7 +27,8 @@ start_rendering() (
 	id=$1
 	# TODO: use argument instead of global variable
 	cp -- "$SRC_BLEND" "$id.blend"
-	( blender -b "$id.blend" -o "$id##.png" -E $ENGINE -f 85 && mv "${id}85.png" "${id}.png" ) > "$id.log" 2>&1 &
+	blend="$id.blend"; png="${id%??}##.png"; frame="${id#"${id%??}"}"
+	blender -b "$blend" -o "$png" -E $ENGINE -f "$frame" > "$id.log" 2>&1 &
 	render_pid=$!
 	render_cmd=$(ps -p "$render_pid" -o command=)
 	# TODO: support remote host
