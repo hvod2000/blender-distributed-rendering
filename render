@@ -16,16 +16,9 @@ ENGINE=CYCLES # CYCLES or BLENDER_EEVEE
 get_blender_file_id() (
 	src_blend=$1
 	src_hash=$(sha256sum "$src_blend" | cut -d " " -f1)
-	# TODO: find more elegant why to get path to the cache home
-	if [ -d "$XDG_CACHE_HOME" ]; then
-		storage=$XDG_CACHE_HOME
-	else
-		storage=$HOME/.cache
-	fi
-	storage=$storage/blender-renders
+	storage=${XDG_CACHE_HOME:-~/.cache}/blender-renders
 	mkdir -p "$storage"
-	id=$storage/$src_hash
-	echo "$id"
+	echo "$storage/$src_hash"
 )
 
 
