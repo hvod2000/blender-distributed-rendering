@@ -71,3 +71,4 @@ else
 fi
 # TODO: support running until rendering is done
 # TODO: support running multiple instances of waiters
+# TODO: print disclaimer about running blender demon
