@@ -54,8 +54,10 @@ id=$(get_blender_file_id "$SRC_BLEND")
 if progress=$(check_rendering "$id"); then
 	echo "current progress: $progress"
 	if [ "done" = "$progress" ]; then
-		# TODO: print what is id and why it is printed
-		echo "${id}.png"
+		# TODO: learn how articles work in english
+		#echo "the cached result of the rendering is along this path:"
+		echo "cached result of the rendering is along this path:"
+		echo "  ${id}.png"
 		[ -n "$TARGET" ] && {
 			cp "${id}.png" "$TARGET"
 			echo "The result has been copyied to $TARGET"
